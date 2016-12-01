@@ -74,7 +74,7 @@
 //       panic(err)
 //   }
 //   log.SetOutput(w)
-package logrot // import "xi2.org/x/logrot"
+package logrot
 
 import (
 	"bytes"

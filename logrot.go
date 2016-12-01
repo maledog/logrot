@@ -77,7 +77,6 @@
 package logrot
 
 import (
-	"bytes"
 	"compress/gzip"
 	"errors"
 	"fmt"
@@ -209,7 +208,7 @@ func (wc *writeCloser) Write(p []byte) (_ int, err error) {
 		// advance br a line at a time until we reach end of buffer or
 		// br+wc.size advances past wc.maxSize
 		for {
-			i := bytes.IndexByte(p[br:], '\n')
+			i := indexByte(p[br:], '\n')
 			if i == -1 {
 				br += len(p[br:])
 				break
@@ -325,7 +324,7 @@ func Open(path string, perm os.FileMode, maxSize int64, maxFiles int) (io.WriteC
 			_ = file.Close()
 			return nil, err
 		}
-		i := bytes.LastIndexByte(buf[:bufSz], '\n')
+		i := lastIndexByte(buf[:bufSz], '\n')
 		if i != -1 {
 			lastNewline = off + int64(i)
 			break
@@ -342,4 +341,22 @@ func Open(path string, perm os.FileMode, maxSize int64, maxFiles int) (io.WriteC
 		size:        size,
 		lastNewline: lastNewline,
 	}, nil
+}
+
+func lastIndexByte(s []byte, c byte) int {
+	for i := len(s) - 1; i >= 0; i-- {
+		if s[i] == c {
+			return i
+		}
+	}
+	return -1
+}
+
+func indexByte(s []byte, c byte) int {
+	for i := 0; i < len(s); i++ {
+		if s[i] == c {
+			return i
+		}
+	}
+	return -1
 }
